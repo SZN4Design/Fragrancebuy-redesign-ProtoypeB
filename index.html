@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FragranceBuy — Find Your Scent · Prototype B: Trust + Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Bodoni+Moda:opsz,wght@6..96,600;6..96,700&family=Space+Mono:wght@400;700&family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#F7F2EA; --canvas-2:#EFE7DA; --paper:#FFFFFF;
+  --ink:#211B16; --muted:#8C7E6C; --muted-2:#A99B86;
+  --forest:#A96E2E; --forest-deep:#211B16; --forest-soft:#F4E8D6;
+  --gold:#C9A24B; --gold-soft:#D9BE7E; --sand:#EFE7DA;
+  --line:#E3D8C7; --line-soft:#F0E8DB;
+  --r:18px; --r-sm:12px; --r-lg:26px; --pill:999px;
+  --maxw:1180px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --shadow-soft:0 12px 30px -18px rgba(33,27,22,.30);
+  --shadow-card:0 22px 50px -26px rgba(33,27,22,.34);
+  --shadow-pop:0 18px 44px -12px rgba(0,0,0,.40);
+  /* scent family swatches */
+  --g-fresh:linear-gradient(135deg,#E6E8D2,#C4CBA0);
+  --g-warm:linear-gradient(135deg,#F2DBA8,#D89E5E);
+  --g-sweet:linear-gradient(135deg,#F1DDC8,#D9A982);
+  --g-floral:linear-gradient(135deg,#F0DBDD,#D6AEB0);
+  --g-woody:linear-gradient(135deg,#D9C3A0,#9A6E45);
+  --g-gift:linear-gradient(135deg,#EFDDB4,#CFB070);
+  --g-office:linear-gradient(135deg,#E4DCC8,#BCAB92);
+  --g-long:linear-gradient(135deg,#DDCEA8,#AC8C54);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans,'Mulish',system-ui,sans-serif);font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+:root{--sans:'Mulish',system-ui,-apple-system,Segoe UI,sans-serif;--serif:'Fraunces',Georgia,'Times New Roman',serif;--logo:"Bodoni Moda",Georgia,serif;--mono:"Space Mono",ui-monospace,monospace}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0}
+ul{margin:0;padding:0;list-style:none}
+h1,h2,h3,h4{margin:0;font-weight:500;font-family:var(--serif);letter-spacing:-.01em}
+p{margin:0}
+:focus-visible{outline:2.5px solid var(--forest);outline-offset:2px;border-radius:5px}
+
+/* ---------- layout helpers ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.section{padding:74px 0;position:relative}
+.section--tint{background:var(--canvas-2)}
+.section--paper{background:var(--paper)}
+.eyebrow{font-family:var(--sans);font-weight:700;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--forest);display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:18px;height:1.5px;background:var(--gold);display:inline-block}
+.eyebrow.center{justify-content:center}
+.s-head{max-width:680px}
+.s-head.center{margin:0 auto;text-align:center}
+.s-title{font-size:clamp(1.7rem,3.4vw,2.6rem);line-height:1.08;margin:14px 0 0}
+.s-sub{color:var(--muted);font-size:16.5px;margin-top:14px;max-width:60ch}
+.s-head.center .s-sub{margin-left:auto;margin-right:auto}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:var(--sans);font-weight:700;font-size:15px;line-height:1;border-radius:var(--pill);padding:15px 26px;cursor:pointer;border:1.5px solid transparent;transition:transform .2s var(--ease),background .2s,box-shadow .25s,border-color .2s;white-space:nowrap}
+.btn svg{flex:none}
+.btn--primary{background:var(--forest);color:#FCFAF4;box-shadow:0 12px 26px -12px rgba(33,27,22,.7)}
+.btn--primary:hover{background:var(--forest-deep);transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(33,27,22,.7)}
+.btn--ghost{background:transparent;color:var(--forest);border-color:rgba(169,110,46,.4)}
+.btn--ghost:hover{background:var(--forest-soft);border-color:var(--forest);transform:translateY(-2px)}
+.btn--soft{background:var(--paper);color:var(--ink);border-color:var(--line)}
+.btn--soft:hover{border-color:var(--forest);color:var(--forest);transform:translateY(-2px)}
+.btn--block{width:100%}
+
+/* ---------- prototype shell + device frame ---------- */
+.app{min-height:100vh}
+.phone-status,.mobile-bar,.phone-home,.ps-island{display:none}
+.store-scroll{position:relative}
+
+.app.is-mobile{display:flex;justify-content:center;align-items:flex-start;padding:34px 14px 64px;background:radial-gradient(130% 90% at 50% 0%, #ECE5D8 0%, #D8D0C2 62%, #CBC2B2 100%)}
+.app.is-mobile .store{position:relative;width:392px;max-width:100%;height:826px;background:#0c0c0e;border-radius:56px;padding:12px 11px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 0 2px #313135, 0 0 0 7px #18181c, 0 50px 90px -24px rgba(0,0,0,.55)}
+.app.is-mobile .phone-status{display:flex;align-items:center;justify-content:space-between;position:relative;flex:none;background:var(--canvas);padding:11px 26px 7px;border-radius:44px 44px 0 0;font-size:13px;font-weight:800;color:var(--ink)}
+.app.is-mobile .ps-island{display:block;position:absolute;top:9px;left:50%;transform:translateX(-50%);width:88px;height:25px;background:#0c0c0e;border-radius:14px}
+.ps-r{display:flex;align-items:center;gap:6px}
+.app.is-mobile .store-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;background:var(--canvas);-webkit-overflow-scrolling:touch}
+.app.is-mobile .mobile-bar{display:block;flex:none;background:rgba(247,242,234,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:11px 16px}
+.app.is-mobile .phone-home{display:block;flex:none;position:relative;height:24px;background:var(--canvas);border-radius:0 0 44px 44px}
+.app.is-mobile .phone-home::after{content:"";position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:128px;height:5px;border-radius:3px;background:#15151a}
+
+/* ---------- floating prototype dock ---------- */
+.dock{position:fixed;right:20px;bottom:20px;z-index:200;width:248px;background:rgba(28,23,18,.97);color:#EFE6D6;border:1px solid rgba(201,162,75,.4);border-radius:20px;padding:16px 16px 14px;box-shadow:var(--shadow-pop);backdrop-filter:blur(12px);transition:transform .35s var(--ease),opacity .3s}
+.dock.hidden{transform:translateY(20px) scale(.96);opacity:0;pointer-events:none}
+.dock-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dock-brand{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:-.01em}
+.dock-brand b{color:var(--gold-soft);font-style:italic;font-weight:500}
+.dock-x{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#CBBCA6;font-size:17px;cursor:pointer;transition:background .2s}
+.dock-x:hover{background:rgba(255,255,255,.1)}
+.dock-group{margin-top:12px}
+.dock-label{font-family:var(--sans);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#94897A;margin-bottom:7px}
+.seg{display:flex;background:rgba(255,255,255,.07);border-radius:11px;padding:3px}
+.seg button{flex:1;padding:7px 0;border-radius:8px;font-size:12.5px;font-weight:700;color:#C2B6A2;cursor:pointer;transition:background .2s,color .2s}
+.seg button.on{background:var(--gold);color:#231a08}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:600;color:#E4DCC8;cursor:pointer}
+.switch{width:38px;height:22px;border-radius:12px;background:rgba(255,255,255,.16);position:relative;transition:background .25s;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .25s var(--ease)}
+.toggle-row.on .switch{background:var(--gold)}
+.toggle-row.on .switch::after{transform:translateX(16px)}
+.dock-foot{font-family:var(--sans);font-size:9px;color:#94897A;letter-spacing:.03em;margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:9px;line-height:1.55}
+.dock-reopen{position:fixed;right:20px;bottom:20px;z-index:199;background:var(--forest-deep);color:#F1E9D6;border:1px solid rgba(201,162,75,.45);border-radius:50%;width:54px;height:54px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;box-shadow:var(--shadow-pop);font-family:var(--sans);font-size:8.5px;font-weight:800;letter-spacing:.08em;line-height:1}
+.dock-reopen.show{display:flex}
+.dock-reopen .ic{font-size:17px}
+
+/* ---------- annotations ---------- */
+.anno{position:absolute;z-index:120;display:none}
+.app.show-anno .anno{display:block;animation:annoIn .5s var(--ease) both}
+@keyframes annoIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.anno-dot{width:27px;height:27px;border-radius:50%;background:var(--gold);color:#231a08;font-family:var(--sans);font-weight:800;font-size:13px;display:grid;place-items:center;cursor:pointer;box-shadow:0 5px 14px -4px rgba(201,162,75,.8);border:2px solid #fff}
+.anno-card{position:absolute;top:36px;left:0;width:248px;background:var(--forest-deep);color:#F4E8D6;border-radius:14px;padding:13px 15px;font-family:var(--sans);font-size:12.5px;line-height:1.5;box-shadow:var(--shadow-pop);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .25s var(--ease);z-index:2}
+.anno-card.right{left:auto;right:0}
+.anno:hover .anno-card{opacity:1;visibility:visible;transform:translateY(0)}
+.anno-card .tag{display:block;font-weight:800;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:6px}
+.anno-card .hyp{display:block;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14);color:#B9AE9C;font-style:italic}
+.with-anno{position:relative}
+
+/* ---------- announcement bar ---------- */
+.announce{background:var(--forest-deep);color:#EFE6D6;text-align:center;font-size:13px;font-weight:600;letter-spacing:.01em;position:relative;border-bottom:1px solid rgba(0,0,0,.12)}
+.announce-vp{overflow:hidden;padding:9px 16px}
+.announce .rot{display:inline-flex;align-items:center;gap:9px;justify-content:center}
+.announce .ico{color:var(--gold-soft);display:inline-flex}
+.announce b{color:var(--gold-soft);font-weight:700}
+
+/* ---------- header ---------- */
+.header{position:sticky;top:0;z-index:90;background:rgba(247,242,234,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.app.is-mobile .header{position:sticky}
+.header-main{display:flex;align-items:center;gap:20px;padding:15px 28px;max-width:var(--maxw);margin:0 auto}
+.app.is-mobile .header-main{padding:12px 16px;gap:10px}
+.burger{display:none;flex-direction:column;gap:4px;width:38px;height:38px;border-radius:10px;align-items:center;justify-content:center;cursor:pointer}
+.burger .bl{width:19px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s,opacity .2s}
+.nav.open ~ .burger .bl{}
+.brand{display:flex;flex-direction:column;line-height:1.1;flex:none}
+.brand .logo{font-family:var(--logo);font-size:25px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.brand .logo span{color:var(--forest)}
+.brand .tag{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2);margin-top:5px;font-weight:400}
+.nav{display:flex;align-items:center;gap:3px;margin-left:8px}
+.nav a{font-size:14px;font-weight:600;color:var(--ink);padding:9px 13px;border-radius:9px;transition:background .2s,color .2s;position:relative;white-space:nowrap}
+.nav a:hover{background:var(--forest-soft);color:var(--forest)}
+.nav a.feature{color:var(--forest)}
+.nav a.feature::after{content:"";position:absolute;left:13px;right:13px;bottom:4px;height:2px;background:var(--gold);border-radius:2px}
+.head-actions{margin-left:auto;display:flex;align-items:center;gap:6px}
+.search{display:flex;align-items:center;gap:9px;background:var(--paper);border:1px solid var(--line);border-radius:var(--pill);padding:9px 16px;width:280px;transition:border-color .2s,box-shadow .2s}
+.search:focus-within{border-color:var(--forest);box-shadow:0 0 0 3px rgba(169,110,46,.12)}
+.search svg{color:var(--muted-2);flex:none}
+.search input{border:none;outline:none;background:none;width:100%;font-family:var(--sans);font-size:14px;color:var(--ink)}
+.search input::placeholder{color:var(--muted-2)}
+.iconbtn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;cursor:pointer;color:var(--ink);position:relative;transition:background .2s,color .2s}
+.iconbtn:hover{background:var(--forest-soft);color:var(--forest)}
+.search-toggle{display:none}
+.count{position:absolute;top:5px;right:5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--gold);color:#231a08;font-family:var(--sans);font-size:10px;font-weight:800;display:grid;place-items:center;transform:scale(0);transition:transform .25s var(--ease)}
+.count[data-n]:not([data-n="0"]){transform:scale(1)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;background:
+  radial-gradient(120% 90% at 88% 6%, rgba(201,162,75,.10), transparent 46%),
+  radial-gradient(90% 80% at 6% 100%, rgba(169,110,46,.10), transparent 52%),
+  var(--canvas)}
+.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:42px;align-items:center;max-width:var(--maxw);margin:0 auto;padding:62px 28px 70px}
+.hero-eyebrow{margin-bottom:18px}
+.hero h1{font-size:clamp(2.3rem,4.7vw,3.7rem);line-height:1.04;letter-spacing:-.02em;font-variation-settings:"opsz" 30,"wght" 500}
+.hero h1 em{font-style:italic;color:var(--forest);font-variation-settings:"opsz" 30,"wght" 400}
+.hero-sub{font-size:17px;color:var(--muted);max-width:48ch;margin-top:20px;line-height:1.6}
+.hero-cta{display:flex;gap:13px;flex-wrap:wrap;margin-top:30px}
+.hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:var(--pill);padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink)}
+.hbadge svg{color:var(--forest);flex:none}
+/* hero visual */
+.hero-vis{position:relative;display:grid;place-items:center;min-height:380px}
+.hero-halo{position:absolute;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle at 50% 42%, rgba(201,162,75,.28), rgba(169,110,46,.08) 58%, transparent 72%)}
+.hero-plate{position:relative;z-index:2;width:300px;height:344px;max-width:84%;border-radius:30px;background:linear-gradient(168deg,#FFFFFF 0%, #F4EFE3 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--shadow-card),inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(201,162,75,.18)}
+.hero-bottle{position:relative;max-height:88%;max-width:80%;width:auto;object-fit:contain;mix-blend-mode:multiply;filter:drop-shadow(0 16px 22px rgba(60,48,24,.22))}
+.hero-chip{position:absolute;z-index:3;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:9px 13px;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-soft)}
+.hero-chip.tl{top:14px;left:-6px}
+.hero-chip.br{bottom:18px;right:-6px}
+.hero-chip .st{color:var(--gold);font-size:13px;letter-spacing:1px}
+.hero-chip .ct{font-size:11px;color:var(--muted);line-height:1.25}
+.hero-chip .ct b{color:var(--ink);display:block;font-size:12.5px}
+
+/* ---------- trust bar ---------- */
+.trustbar{background:var(--forest-deep);color:#E4D9C6}
+.trust-inner{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;max-width:var(--maxw);margin:0 auto;padding:20px 28px}
+.trust-item{display:flex;align-items:center;gap:11px;padding:8px 6px}
+.trust-item .ti{width:34px;height:34px;border-radius:10px;background:rgba(201,162,75,.18);display:grid;place-items:center;color:var(--gold-soft);flex:none}
+.trust-item .ti svg{display:block}
+.trust-item > span:not(.ti){display:flex;flex-direction:column;gap:2px;min-width:0}
+.trust-item .tt{display:block;font-size:13px;font-weight:700;line-height:1.2}
+.trust-item .ts{display:block;font-size:11px;color:#A99B86;line-height:1.25}
+
+/* ---------- scent finder ---------- */
+.finder-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.finder-cta{display:flex;gap:11px;flex-wrap:wrap}
+.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}
+.mood{display:flex;flex-direction:column;position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--paper);cursor:pointer;text-align:left;transition:transform .25s var(--ease),box-shadow .25s,border-color .2s}
+.mood:hover{transform:translateY(-5px);box-shadow:var(--shadow-card);border-color:var(--gold-soft)}
+.mood-swatch{display:block;height:88px;flex:none;position:relative}
+.mood-swatch::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.08))}
+.mood-body{display:flex;flex-direction:column;flex:1;padding:14px 16px 16px}
+.mood-name{display:block;font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.12}
+.mood-desc{display:block;font-size:12.5px;color:var(--muted);margin-top:5px}
+.mood-go{display:inline-flex;align-self:flex-start;align-items:center;gap:5px;margin-top:auto;padding-top:11px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--forest);text-transform:uppercase}
+.mood:hover .mood-go{gap:8px}
+.fresh{background:var(--g-fresh)} .warm{background:var(--g-warm)} .sweet{background:var(--g-sweet)}
+.floral{background:var(--g-floral)} .woody{background:var(--g-woody)} .gift{background:var(--g-gift)}
+.office{background:var(--g-office)} .long{background:var(--g-long)}
+.mood-nav{display:none;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px}
+.mood-prev,.mood-next{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-weight:700;font-size:13.5px;border-radius:var(--pill);cursor:pointer;transition:transform .2s var(--ease),border-color .2s,color .2s,background .2s}
+.mood-prev{width:42px;height:42px;justify-content:center;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+.mood-prev:hover{border-color:var(--forest);color:var(--forest)}
+.mood-next{padding:11px 20px;background:var(--forest);color:#FCFAF4;border:1.5px solid transparent;box-shadow:0 10px 22px -12px rgba(169,110,46,.7)}
+.mood-next:hover{transform:translateY(-2px)}
+.mood-prev svg,.mood-next svg{flex:none}
+
+/* ---------- authenticity ---------- */
+.auth-top{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:34px 38px;box-shadow:var(--shadow-soft)}
+.seal{width:var(--s,96px);height:var(--s,96px);border-radius:50%;flex:none;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 38% 30%, #FFF6E4, var(--gold-soft) 42%, var(--gold) 100%);color:var(--forest-deep);box-shadow:0 12px 26px -10px rgba(201,162,75,.6),inset 0 0 0 1px rgba(255,255,255,.55)}
+.seal::before{content:"";position:absolute;inset:6px;border:1.5px dashed rgba(33,27,22,.42);border-radius:50%}
+.seal b{font-family:var(--serif);font-weight:600;font-size:calc(var(--s,96px)*.22);line-height:1}
+.seal small{font-family:var(--sans);font-weight:800;font-size:calc(var(--s,96px)*.086);letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+.auth-txt h3{font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2rem);font-weight:500;margin-bottom:10px}
+.auth-txt p{font-size:15px;color:var(--muted);max-width:60ch}
+.auth-txt .strong{color:var(--ink);font-weight:700}
+.auth-promise{display:flex;gap:24px;flex-wrap:wrap;margin-top:18px}
+.apoint{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;color:var(--ink)}
+.apoint svg{color:var(--forest);flex:none}
+.auth-learn{display:inline-flex;align-items:center;gap:6px;margin-top:18px;font-size:13px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--forest)}
+.type-head{margin-top:36px;text-align:center}
+.type-head .tlabel{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--muted)}
+.type-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:18px}
+.tcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px 17px;transition:transform .25s var(--ease),box-shadow .25s,border-color .2s}
+.tcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-card);border-color:var(--gold-soft)}
+.tcard .tk{width:38px;height:38px;border-radius:10px;background:var(--forest-soft);color:var(--forest);display:grid;place-items:center;margin-bottom:13px}
+.tcard h4{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:6px}
+.tcard p{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* ---------- product cards (blind buys) ---------- */
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px}
+.pcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .28s var(--ease),box-shadow .28s,border-color .2s}
+.pcard:hover{transform:translateY(-6px);box-shadow:var(--shadow-card);border-color:var(--gold-soft)}
+.pcard-media{position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%, #FCF9F3, #F1EADD);overflow:hidden}
+.pcard-media .bottle{width:auto;height:80%;max-width:84%;object-fit:contain;mix-blend-mode:multiply;transition:transform .4s var(--ease)}
+.pcard:hover .bottle{transform:scale(1.06) translateY(-3px)}
+.fam-tag{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.02em;padding:5px 9px;border-radius:var(--pill);backdrop-filter:blur(4px);z-index:2}
+.fam-tag .dot{width:7px;height:7px;border-radius:50%}
+.fam-fresh{background:#ECEEDD;color:#5F6B41}.fam-fresh .dot{background:#8A9A5E}
+.fam-warm{background:#F6ECD6;color:#9A6A28}.fam-warm .dot{background:#C08A3E}
+.fam-sweet{background:#F4E7D9;color:#9A6A47}.fam-sweet .dot{background:#C79A6E}
+.fam-floral{background:#F4E6E7;color:#9A5E62}.fam-floral .dot{background:#C78A8E}
+.fam-woody{background:#EFE6D8;color:#7A5A38}.fam-woody .dot{background:#8C6A47}
+.wish{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);display:grid;place-items:center;color:var(--muted);cursor:pointer;border:1px solid var(--line);transition:color .2s,transform .2s;z-index:2}
+.wish:hover{color:var(--forest);transform:scale(1.1)}
+.wish.on{color:#C0566B}.wish.on svg{fill:#C0566B}
+.pcard-body{padding:15px 16px 16px;display:flex;flex-direction:column;flex:1}
+.pcard-brand{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2)}
+.pcard-name{font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.12;margin-top:3px}
+.pcard-meta{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.chip{font-size:11px;font-weight:700;color:var(--forest);background:var(--forest-soft);border-radius:var(--pill);padding:3px 10px}
+.rating{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--ink);margin-left:auto}
+.rating .st{color:var(--gold);letter-spacing:.5px}
+.pcard-note{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--muted);background:var(--canvas-2);border-radius:10px;padding:9px 11px;line-height:1.35}
+.pcard-note svg{color:var(--forest);flex:none}
+.pcard-foot{display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:14px}
+.pcard-foot .btn{flex:1;padding:11px 14px;font-size:13.5px}
+.qwish{width:42px;height:42px;border-radius:var(--pill);border:1.5px solid var(--line);display:grid;place-items:center;color:var(--muted);cursor:pointer;flex:none;transition:border-color .2s,color .2s}
+.qwish:hover{border-color:var(--forest);color:var(--forest)}
+
+/* ---------- education ---------- */
+.edu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.ecard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 20px;position:relative;transition:transform .25s var(--ease),box-shadow .25s,border-color .2s}
+.ecard:hover{transform:translateY(-4px);box-shadow:var(--shadow-card);border-color:var(--gold-soft)}
+.ecard .ei{width:44px;height:44px;border-radius:12px;background:var(--forest-soft);color:var(--forest);display:grid;place-items:center}
+.ecard h4{font-family:var(--serif);font-size:19px;font-weight:600;margin:15px 0 7px}
+.ecard p{font-size:13.5px;color:var(--muted);line-height:1.55}
+.ecard .more{display:inline-flex;align-items:center;gap:5px;margin-top:13px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--forest)}
+.ecard:hover .more{gap:8px}
+
+/* ---------- reviews ---------- */
+.rev-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column}
+.rev .stars{color:var(--gold);font-size:14px;letter-spacing:1px;margin-bottom:11px}
+.rev p{font-size:14px;color:var(--ink);line-height:1.55;flex:1}
+.rev .who{display:flex;align-items:center;gap:10px;margin-top:15px}
+.rev .av{width:36px;height:36px;border-radius:50%;background:var(--forest-soft);color:var(--forest);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.rev .nm{font-size:12.5px;font-weight:800}
+.rev .mt2{font-size:11px;color:var(--muted-2)}
+.rev-stat{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:30px;padding:24px;background:var(--forest-soft);border-radius:var(--r-lg)}
+.rstat{text-align:center;padding:0 20px}
+.rstat b{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--forest-deep);display:block;line-height:1}
+.rstat span{font-size:12px;color:var(--muted);font-weight:600}
+.rstat .stars{color:var(--gold);font-size:16px}
+.rstat + .rstat{border-left:1px solid rgba(169,110,46,.18)}
+
+/* ---------- shipping / returns ---------- */
+.ship{background:linear-gradient(140deg,#33271D 0%, #211B16 100%);color:#EFE6D6;border-radius:var(--r-lg);padding:40px 42px;display:grid;grid-template-columns:1.05fr 1fr;gap:36px;align-items:center;max-width:var(--maxw);margin:0 auto}
+.ship .eyebrow{color:var(--gold-soft)}
+.ship .eyebrow::before{background:var(--gold-soft)}
+.ship h3{font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2rem);font-weight:500;margin:12px 0 0;color:#fff}
+.ship>div>p{color:#C7BBA8;margin-top:13px;font-size:15px;max-width:42ch}
+.ship-feats{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.sfeat{display:flex;align-items:flex-start;gap:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px}
+.sfeat .si{width:34px;height:34px;border-radius:9px;background:rgba(201,162,75,.22);color:var(--gold-soft);display:grid;place-items:center;flex:none}
+.sfeat b{font-size:13.5px;color:#fff;display:block;margin-bottom:2px}
+.sfeat span{font-size:11.5px;color:#A99B86;line-height:1.4}
+
+/* ---------- FAQ ---------- */
+.faq-wrap{max-width:790px;margin:34px auto 0}
+.faq{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);margin-bottom:10px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.faq.open{border-color:var(--gold-soft);box-shadow:var(--shadow-soft)}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 20px;cursor:pointer;text-align:left;font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink)}
+.faq-q .pm{width:27px;height:27px;border-radius:50%;background:var(--forest-soft);color:var(--forest);display:grid;place-items:center;font-size:19px;line-height:1;flex:none;transition:transform .3s var(--ease),background .2s,color .2s}
+.faq.open .faq-q .pm{transform:rotate(45deg);background:var(--forest);color:#fff}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s var(--ease)}
+.faq-a-in{padding:0 20px 18px;color:var(--muted);font-size:14px;line-height:1.6}
+
+/* ---------- final CTA ---------- */
+.finalcta{position:relative;overflow:hidden;text-align:center;background:radial-gradient(80% 120% at 50% 0%, rgba(201,162,75,.13), transparent 56%), var(--canvas-2)}
+.finalcta .inner{max-width:680px;margin:0 auto;padding:80px 28px;position:relative;z-index:2}
+.finalcta h2{font-size:clamp(2rem,4vw,3rem);line-height:1.06}
+.finalcta h2 em{font-style:italic;color:var(--forest)}
+.finalcta>.inner>p{color:var(--muted);font-size:16.5px;margin-top:16px}
+.finalcta .hero-cta{justify-content:center;margin-top:30px}
+
+/* ---------- footer ---------- */
+.foot{background:var(--forest-deep);color:#CBBCA6;padding:50px 0 26px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.foot-brand .logo{font-family:var(--logo);font-size:24px;font-weight:700;color:#fff}
+.foot-brand .logo span{color:var(--gold-soft)}
+.foot-brand p{font-size:13px;color:#A99B86;margin-top:12px;max-width:34ch;line-height:1.6}
+.foot h5{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);margin:0 0 14px;font-weight:800}
+.foot li{margin-bottom:9px}
+.foot a{font-size:13.5px;color:#C7BBA8;transition:color .2s}
+.foot a:hover{color:#fff}
+.foot-bottom{max-width:var(--maxw);margin:36px auto 0;padding:18px 28px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12px;color:#94897A}
+
+/* ---------- metrics overlay ---------- */
+.metrics-overlay{position:fixed;inset:0;z-index:300;background:rgba(22,17,12,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px}
+.metrics-overlay.show{display:flex;animation:fadeIn .25s ease both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.metrics{background:#1A1511;color:#EFE6D6;width:100%;max-width:1000px;max-height:88vh;overflow:auto;border:1px solid rgba(201,162,75,.3);border-radius:22px;padding:26px 28px;box-shadow:var(--shadow-pop)}
+.metrics-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+.metrics-head .mt{font-family:var(--sans);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft);font-weight:800}
+.metrics-head h3{font-family:var(--serif);font-size:24px;font-weight:600;margin:6px 0;color:#fff}
+.metrics-head p{font-size:13px;color:#A99B86;max-width:62ch}
+.metrics-close{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);color:#CBBCA6;font-size:19px;cursor:pointer;flex:none}
+.metrics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.metric{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:15px}
+.metric .ml{font-size:11px;color:#A99B86;font-weight:600;line-height:1.3;min-height:28px}
+.metric .mv{font-family:var(--serif);font-size:25px;font-weight:600;color:#fff;margin-top:8px;line-height:1}
+.metric .md{font-size:11px;font-weight:800;margin-top:5px}
+.metric .md.up{color:#6FBE83}.metric .md.down{color:#E08272}
+.metric .spark{margin-top:10px;height:30px;width:100%}
+.metrics-note{font-family:var(--sans);font-size:10.5px;color:#94897A;margin-top:16px;line-height:1.5}
+
+/* ---------- toast ---------- */
+.toast-wrap{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:9px;align-items:center;pointer-events:none}
+.toast{background:var(--forest-deep);color:#EFE6D6;font-size:13.5px;font-weight:600;padding:12px 18px;border-radius:var(--pill);box-shadow:var(--shadow-pop);display:flex;align-items:center;gap:9px;border:1px solid rgba(201,162,75,.35)}
+.toast svg{color:var(--gold-soft);flex:none}
+
+/* ---------- burger animation ---------- */
+.burger.on .bl:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger.on .bl:nth-child(2){opacity:0}
+.burger.on .bl:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* ============ MOBILE PREVIEW (simulated phone) ============ */
+.app.is-mobile .section{padding:46px 0}
+.app.is-mobile .wrap{padding:0 18px}
+.app.is-mobile .header-main{flex-wrap:wrap}
+.app.is-mobile .nav{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;margin:0;background:var(--canvas);border-bottom:1px solid var(--line);box-shadow:var(--shadow-soft);max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+.app.is-mobile .nav.open{max-height:480px}
+.app.is-mobile .nav a{padding:14px 18px;border-radius:0;border-bottom:1px solid var(--line-soft)}
+.app.is-mobile .nav a.feature::after{display:none}
+.app.is-mobile .burger{display:flex}
+.app.is-mobile .brand .tag{display:none}
+.app.is-mobile .brand .logo{font-size:21px}
+.app.is-mobile .head-actions{gap:1px}
+.app.is-mobile .search-toggle{display:grid}
+.app.is-mobile .search{display:none;order:6;flex-basis:100%;width:100%;margin-top:8px}
+.app.is-mobile .search.open{display:flex}
+.app.is-mobile .hero-grid{grid-template-columns:1fr;gap:24px;padding:32px 18px 38px;text-align:center}
+.app.is-mobile .hero-sub{margin-left:auto;margin-right:auto}
+.app.is-mobile .hero-cta{justify-content:center}
+.app.is-mobile .hero-cta .btn{flex:1}
+.app.is-mobile .hero-badges{justify-content:center}
+.app.is-mobile .hero-vis{min-height:286px}
+.app.is-mobile .hero-plate{width:236px;height:280px}
+.app.is-mobile .hero-chip.tl{left:0;top:4px}
+.app.is-mobile .hero-chip.br{right:0;bottom:6px}
+.app.is-mobile .trust-inner{grid-template-columns:1fr 1fr;gap:4px;padding:16px}
+.app.is-mobile .trust-item{padding:7px 4px}
+.app.is-mobile .trust-item .ts{display:none}
+.app.is-mobile .finder-head{flex-direction:column;align-items:flex-start;gap:14px}
+.app.is-mobile .mood-grid{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:22px -18px 0;padding:2px 18px 8px;scrollbar-width:none;-ms-overflow-style:none}
+.app.is-mobile .mood-grid::-webkit-scrollbar{display:none}
+.app.is-mobile .mood{flex:0 0 74%;scroll-snap-align:start}
+.app.is-mobile .mood-nav{display:flex}
+.app.is-mobile .auth-top{grid-template-columns:1fr;text-align:center;padding:26px 20px}
+.app.is-mobile .auth-top .seal{margin:0 auto}
+.app.is-mobile .auth-promise{justify-content:center}
+.app.is-mobile .type-grid{grid-template-columns:1fr 1fr}
+.app.is-mobile .prod-grid{grid-template-columns:1fr}
+.app.is-mobile .edu-grid{grid-template-columns:1fr}
+.app.is-mobile .rev-wrap{grid-template-columns:1fr}
+.app.is-mobile .rev-stat{flex-direction:column;gap:16px}
+.app.is-mobile .rstat + .rstat{border-left:none;border-top:1px solid rgba(169,110,46,.18);padding-top:16px}
+.app.is-mobile .ship{grid-template-columns:1fr;padding:28px 22px;gap:22px}
+.app.is-mobile .ship-feats{grid-template-columns:1fr}
+.app.is-mobile .finalcta .inner{padding:54px 20px}
+.app.is-mobile .foot-grid{grid-template-columns:1fr 1fr;gap:22px}
+.app.is-mobile .foot-brand{grid-column:1 / -1}
+.app.is-mobile .foot-bottom{flex-direction:column;text-align:center;align-items:center}
+
+/* ============ REAL VIEWPORT FALLBACK ============ */
+@media (max-width:880px){
+  .header-main{flex-wrap:wrap}
+  .nav{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;margin:0;background:var(--canvas);border-bottom:1px solid var(--line);box-shadow:var(--shadow-soft);max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+  .nav.open{max-height:480px}
+  .nav a{padding:14px 18px;border-radius:0;border-bottom:1px solid var(--line-soft)}
+  .nav a.feature::after{display:none}
+  .burger,.search-toggle{display:flex}
+  .search-toggle{display:grid}
+  .search{display:none;order:6;flex-basis:100%;width:100%;margin-top:8px}
+  .search.open{display:flex}
+  .hero-grid{grid-template-columns:1fr;gap:26px;text-align:center}
+  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-cta,.hero-badges{justify-content:center}
+  .trust-inner{grid-template-columns:1fr 1fr 1fr}
+  .mood-grid{grid-template-columns:1fr 1fr}
+  .type-grid{grid-template-columns:1fr 1fr 1fr}
+  .prod-grid{grid-template-columns:1fr 1fr}
+  .edu-grid{grid-template-columns:1fr 1fr}
+  .rev-wrap{grid-template-columns:1fr 1fr}
+  .ship{grid-template-columns:1fr;padding:30px 26px}
+  .auth-top{grid-template-columns:1fr;text-align:center}
+  .auth-top .seal{margin:0 auto}
+  .auth-promise{justify-content:center}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .metrics-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:560px){
+  .trust-inner{grid-template-columns:1fr 1fr}
+  .mood-grid{grid-template-columns:1fr}
+  .type-grid{grid-template-columns:1fr 1fr}
+  .prod-grid{grid-template-columns:1fr}
+  .edu-grid{grid-template-columns:1fr}
+  .rev-wrap{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .section{padding:46px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* ---------- added: reveal, product price/sub, status icons, skip link ---------- */
+html.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+html.js .reveal.in{opacity:1;transform:none}
+.pcard-sub{font-size:11.5px;color:var(--muted-2);font-weight:600;margin-top:4px}
+.rc{color:var(--muted-2);font-weight:600}
+.pcard-price{display:flex;align-items:baseline;gap:8px;margin-top:13px;font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink)}
+.pcard-price s{font-family:var(--sans);font-weight:600;font-size:12.5px;color:var(--muted-2)}
+.ps-r{color:var(--ink)}
+.ps-r svg{display:block}
+.skip{position:absolute;left:-999px;top:0;z-index:500;background:var(--forest);color:#fff;padding:10px 16px;border-radius:0 0 10px 0;font-weight:700;font-size:13px}
+.skip:focus{left:0}
+</style>
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="store">
+
+    <!-- phone status bar (mobile preview only) -->
+    <div class="phone-status">
+      <span>9:41</span>
+      <span class="ps-island"></span>
+      <span class="ps-r">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="1"/><rect x="9" y="2" width="3" height="10" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.2c2.1 0 4 .8 5.5 2.2l1.3-1.3C13 1.2 10.6.2 8 .2S3 1.2 1.2 3.1L2.5 4.4C4 3 5.9 2.2 8 2.2Zm0 3.4c1.2 0 2.3.5 3.1 1.3l1.3-1.3C11.3 4.4 9.7 3.7 8 3.7s-3.3.7-4.4 1.9l1.3 1.3C5.7 6.1 6.8 5.6 8 5.6Zm0 3.3 1.8-1.8c-.5-.5-1.1-.7-1.8-.7s-1.3.2-1.8.7L8 8.9Z"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".5"/><rect x="3" y="3" width="15" height="6" rx="1" fill="currentColor"/><rect x="22.5" y="4" width="1.5" height="4" rx=".7" fill="currentColor" opacity=".5"/></svg>
+      </span>
+    </div>
+
+    <div class="store-scroll" id="storeScroll">
+      <a class="skip" href="#main">Skip to content</a>
+
+      <!-- ===== 1 · ANNOUNCEMENT BAR ===== -->
+      <div class="announce">
+        <div class="announce-vp">
+          <span class="rot" id="annTrack">
+            <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg></span>
+            <span><b>Authentic fragrances, guaranteed</b> — every bottle verified before it ships</span>
+          </span>
+          <span class="rot">
+            <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8 2 5 6 5 11c0 5 4 8 7 11 3-3 7-6 7-11 0-5-3-9-7-9z"/><path d="M12 7v8M8 11h8"/></svg></span>
+            <span>Proudly <b>Canadian-owned</b> — fast, tracked shipping coast to coast</span>
+          </span>
+          <span class="rot">
+            <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+            <span><b>Secure checkout</b> · clear product labels · easy 30-day returns</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- ===== 2 · HEADER + GUIDED NAV ===== -->
+      <header class="header">
+        <div class="header-main">
+          <div class="burger" id="burger" role="button" aria-label="Menu" tabindex="0"><span class="bl"></span><span class="bl"></span><span class="bl"></span></div>
+          <div class="brand">
+            <span class="logo">Fragrance<span>Buy</span></span>
+            <span class="tag">Authentic · Canadian</span>
+          </div>
+          <nav class="nav" id="nav" aria-label="Primary">
+            <a href="#finder" class="feature">Find Your Scent</a>
+            <a href="#blind">Bestsellers</a>
+            <a href="#blind">Women</a>
+            <a href="#blind">Men</a>
+            <a href="#blind">Niche</a>
+            <a href="#finder">Gift Sets</a>
+            <a href="#learn">Learn</a>
+          </nav>
+          <div class="head-actions">
+            <div class="search" id="search">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" placeholder="Search brands, notes or moods…" aria-label="Search">
+            </div>
+            <button class="iconbtn search-toggle" id="searchToggle" aria-label="Search">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+            <button class="iconbtn" aria-label="Wishlist">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span class="count" id="wishCount" data-n="0">0</span>
+            </button>
+            <button class="iconbtn" aria-label="Cart">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span class="count" id="cartCount" data-n="0">0</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main">
+
+        <!-- ===== 3 · TRUST-LED HERO ===== -->
+        <section class="hero with-anno">
+          <div class="anno" style="top:16px;right:20px">
+            <div class="anno-dot">1</div>
+            <div class="anno-card right"><span class="tag">Trust-led hero</span>Leads with confidence and guidance, not discounts — and answers “can I trust this, and where do I start?”<span class="hyp">Hypothesis: trust-first messaging lowers bounce for first-time visitors.</span></div>
+          </div>
+          <div class="hero-grid">
+            <div>
+              <div class="eyebrow hero-eyebrow">Designer &amp; niche · verified authentic</div>
+              <h1>Find your next fragrance <em>with confidence.</em></h1>
+              <p class="hero-sub">Shop authentic designer and niche scents with clear product labels, trusted sourcing, and guided discovery — so it’s easy to choose, even if you’re just starting out.</p>
+              <div class="hero-cta">
+                <button class="btn btn--primary" data-scroll="finder">Find Your Scent
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+                <button class="btn btn--ghost" data-scroll="blind">Shop Bestsellers</button>
+              </div>
+              <div class="hero-badges">
+                <span class="hbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>Authenticity guaranteed</span>
+                <span class="hbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8 2 5 6 5 11c0 5 4 8 7 11 3-3 7-6 7-11 0-5-3-9-7-9z"/></svg>Canadian-owned</span>
+                <span class="hbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Secure checkout</span>
+                <span class="hbadge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v5H4zM6 9v11h12V9M9 13h6"/></svg>Clear product labels</span>
+              </div>
+            </div>
+            <div class="hero-vis">
+              <div class="hero-halo"></div>
+              <div class="hero-plate">
+                <img class="hero-bottle" src="https://fragrancebuy.ca/cdn/shop/files/armanisungioa-woman.jpg?v=1780081820&width=533" alt="Giorgio Armani Acqua di Gioia Sun Gioia" onerror="this.style.visibility='hidden'">
+              </div>
+              <div class="hero-chip tl"><span class="st">★★★★★</span><span class="ct"><b>4.7 / 5</b>12,400+ reviews</span></div>
+              <div class="hero-chip br"><span class="ct"><b>100% Authentic</b>Verified sourcing</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 4 · TRUST BAR ===== -->
+        <section class="trustbar">
+          <div class="trust-inner">
+            <div class="trust-item"><span class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg></span><span><span class="tt">Authenticity guaranteed</span><span class="ts">Every bottle verified</span></span></div>
+            <div class="trust-item"><span class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8 2 5 6 5 11c0 5 4 8 7 11 3-3 7-6 7-11 0-5-3-9-7-9z"/><path d="M12 7v8M8 11h8"/></svg></span><span><span class="tt">Canadian-owned</span><span class="ts">Shipped from Canada</span></span></div>
+            <div class="trust-item"><span class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v5H4zM6 9v11h12V9M9 13h6"/></svg></span><span><span class="tt">Clear product labels</span><span class="ts">Know what you buy</span></span></div>
+            <div class="trust-item"><span class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><span><span class="tt">Secure checkout</span><span class="ts">Encrypted &amp; safe</span></span></div>
+            <div class="trust-item"><span class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="11" rx="2"/><path d="M16 9h4l3 3v5h-7zM6 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></span><span><span class="tt">Fast shipping</span><span class="ts">Dispatched in 1–2 days</span></span></div>
+            <div class="trust-item"><span class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12a8 8 0 0 1 16 0v5a2 2 0 0 1-2 2h-2v-5h4M4 12v5a2 2 0 0 0 2 2h2v-5H4"/></svg></span><span><span class="tt">Customer support</span><span class="ts">Real people, real help</span></span></div>
+          </div>
+        </section>
+
+        <!-- ===== 5 · SCENT FINDER / GUIDED DISCOVERY ===== -->
+        <section class="section section--paper with-anno" id="finder">
+          <div class="anno" style="top:24px;right:20px">
+            <div class="anno-dot">2</div>
+            <div class="anno-card right"><span class="tag">Guided discovery</span>Mood-based entry points let people shop by feeling instead of memorising brands or notes.<span class="hyp">Hypothesis: reduces choice overload and creates a guided path to purchase.</span></div>
+          </div>
+          <div class="wrap">
+            <div class="finder-head">
+              <div class="s-head reveal">
+                <span class="eyebrow">Guided discovery</span>
+                <h2 class="s-title">Not sure where to start?</h2>
+                <p class="s-sub">Tell us the vibe and we’ll point you to scents you’ll love — no fragrance vocabulary required.</p>
+              </div>
+              <div class="finder-cta reveal">
+                <button class="btn btn--primary js-quiz">Take the Scent Finder Quiz
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+                </button>
+                <button class="btn btn--soft" data-scroll="moods">Shop by Mood</button>
+              </div>
+            </div>
+            <div class="mood-grid" id="moods">
+              <button class="mood reveal" data-mood="fresh + clean"><span class="mood-swatch fresh"></span><span class="mood-body"><span class="mood-name">Fresh + clean</span><span class="mood-desc">Crisp, showered, effortless.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="warm + spicy"><span class="mood-swatch warm"></span><span class="mood-body"><span class="mood-name">Warm + spicy</span><span class="mood-desc">Cozy, bold, memorable.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="sweet + gourmand"><span class="mood-swatch sweet"></span><span class="mood-body"><span class="mood-name">Sweet + gourmand</span><span class="mood-desc">Vanilla, caramel, dessert-like.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="floral + feminine"><span class="mood-swatch floral"></span><span class="mood-body"><span class="mood-name">Floral + feminine</span><span class="mood-desc">Petals, soft, romantic.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="woody + bold"><span class="mood-swatch woody"></span><span class="mood-body"><span class="mood-name">Woody + bold</span><span class="mood-desc">Deep, grounded, confident.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="gift-safe"><span class="mood-swatch gift"></span><span class="mood-body"><span class="mood-name">Gift-safe picks</span><span class="mood-desc">Universally loved, easy wins.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="office-safe"><span class="mood-swatch office"></span><span class="mood-body"><span class="mood-name">Office-safe scents</span><span class="mood-desc">Subtle, polite, close-wearing.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+              <button class="mood reveal" data-mood="long-lasting"><span class="mood-swatch long"></span><span class="mood-body"><span class="mood-name">Long-lasting</span><span class="mood-desc">All-day projection &amp; sillage.</span><span class="mood-go">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>
+            </div>
+            <div class="mood-nav">
+              <button class="mood-prev" type="button" aria-label="Previous moods"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <button class="mood-next" type="button" aria-label="Next moods">Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 6 · AUTHENTICITY PROOF ===== -->
+        <section class="section section--tint with-anno" id="auth">
+          <div class="anno" style="top:24px;right:20px">
+            <div class="anno-dot">3</div>
+            <div class="anno-card right"><span class="tag">Authenticity proof</span>Directly answers the biggest objection around discounted fragrance, and explains every product format up front.<span class="hyp">Hypothesis: explaining sourcing + formats increases willingness to buy.</span></div>
+          </div>
+          <div class="wrap">
+            <div class="s-head center reveal">
+              <span class="eyebrow center">Why you can trust us</span>
+              <h2 class="s-title">Authenticity comes first</h2>
+              <p class="s-sub">Lower prices, never lower standards. Here’s exactly how we keep every bottle genuine — and what each label on a listing means.</p>
+            </div>
+            <div class="auth-top reveal">
+              <div class="seal"><b>100%</b><small>Authentic</small></div>
+              <div class="auth-txt">
+                <h3>No knock-offs. No imitations.</h3>
+                <p>Every fragrance is sourced from <span class="strong">trusted suppliers and distributors</span>, batch-checked on arrival, and sold sealed unless the listing clearly says otherwise. If it isn’t the real thing, it never reaches your cart.</p>
+                <div class="auth-promise">
+                  <span class="apoint"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 5 5L20 7"/></svg>Trusted sourcing</span>
+                  <span class="apoint"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 5 5L20 7"/></svg>Batch-verified</span>
+                  <span class="apoint"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 5 5L20 7"/></svg>Sealed unless labelled</span>
+                </div>
+                <span class="auth-learn">How we verify <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <div class="type-head reveal">
+              <span class="tlabel">Every listing shows exactly what you’re buying:</span>
+            </div>
+            <div class="type-grid">
+              <div class="tcard reveal"><span class="tk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/></svg></span><h4>Boxed</h4><p>Brand-new, factory-sealed in its original retail box.</p></div>
+              <div class="tcard reveal"><span class="tk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 3v3h4V3"/></svg></span><h4>Tester</h4><p>Genuine juice in plain testing packaging — same scent, lower price.</p></div>
+              <div class="tcard reveal"><span class="tk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 3h6v4l-2 2v3l2 2v5H9v-5l2-2V9L9 7z"/></svg></span><h4>Decant</h4><p>A smaller amount poured into a travel atomizer — try before you commit.</p></div>
+              <div class="tcard reveal"><span class="tk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 8V6h18v2M12 8v13M8 6c-2-3 4-4 4 0M16 6c2-3-4-4-4 0"/></svg></span><h4>Gift Set</h4><p>Coordinated bundles — often a bottle plus travel size or body care.</p></div>
+              <div class="tcard reveal"><span class="tk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg></span><h4>Pre-owned</h4><p>Gently used, fill level shown clearly — the most affordable way in.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 7 · BEST BLIND BUYS ===== -->
+        <section class="section section--paper with-anno" id="blind">
+          <div class="anno" style="top:24px;right:20px">
+            <div class="anno-dot">4</div>
+            <div class="anno-card right"><span class="tag">Decision support</span>Cards lead with scent family, occasion and a plain-language note instead of just a product name.<span class="hyp">Hypothesis: decision-support labels reduce the fear of picking the wrong scent.</span></div>
+          </div>
+          <div class="wrap">
+            <div class="s-head reveal">
+              <span class="eyebrow">Beginner-friendly</span>
+              <h2 class="s-title">Best blind buys</h2>
+              <p class="s-sub">Safe, versatile, customer-loved crowd-pleasers — confident picks even if you’ve never smelled them.</p>
+            </div>
+            <div class="prod-grid" id="prodGrid"></div>
+          </div>
+        </section>
+
+        <!-- ===== 8 · FRAGRANCE EDUCATION ===== -->
+        <section class="section section--tint with-anno" id="learn">
+          <div class="anno" style="top:24px;right:20px">
+            <div class="anno-dot">5</div>
+            <div class="anno-card right"><span class="tag">Product education</span>Plain-language guides demystify testers, decants and EDP vs EDT before the shopper has to commit.<span class="hyp">Hypothesis: less confusion → fewer support tickets and more confident purchases.</span></div>
+          </div>
+          <div class="wrap">
+            <div class="s-head center reveal">
+              <span class="eyebrow center">Learn the basics</span>
+              <h2 class="s-title">Know what you’re buying</h2>
+              <p class="s-sub">Short, jargon-free explainers so the labels and lingo never get in the way of finding something you love.</p>
+            </div>
+            <div class="edu-grid">
+              <article class="ecard reveal"><span class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6v4l-2 2v3l2 2v5H9v-5l2-2V9L9 7z"/></svg></span><h4>EDP vs EDT</h4><p>It’s about concentration: EDP is richer and lasts longer, EDT is lighter and fresher. Neither is “better” — it depends on the vibe.</p><span class="more">Read guide <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
+              <article class="ecard reveal"><span class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 3v3h4V3"/></svg></span><h4>Tester vs boxed</h4><p>A tester is the exact same fragrance in plain packaging meant for counters — identical juice, friendlier price.</p><span class="more">Read guide <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
+              <article class="ecard reveal"><span class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2h8M9 2v4l-3 5v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9l-3-5V2"/></svg></span><h4>Decants explained</h4><p>A small amount of the real fragrance in a travel atomizer — perfect for testing a scent for a few weeks before buying full size.</p><span class="more">Read guide <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
+              <article class="ecard reveal"><span class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 8V6h18v2M12 8v13"/></svg></span><h4>Gift sets explained</h4><p>Bundles that pair a fragrance with extras like a travel spray or lotion — usually better value and beautifully boxed.</p><span class="more">Read guide <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
+              <article class="ecard reveal"><span class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3.5"/></svg></span><h4>Choosing notes</h4><p>Top, heart and base notes unfold over time. Match notes to the mood you want and you’ll rarely go wrong.</p><span class="more">Read guide <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
+              <article class="ecard reveal"><span class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h4>How long it lasts</h4><p>Longevity depends on concentration, your skin and the notes. We flag long-lasting picks so you know what to expect.</p><span class="more">Read guide <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 9 · REVIEWS / COMMUNITY PROOF ===== -->
+        <section class="section section--paper with-anno" id="reviews">
+          <div class="anno" style="top:24px;right:20px">
+            <div class="anno-dot">6</div>
+            <div class="anno-card right"><span class="tag">Community proof</span>A mix of store-level and product-level social proof signals the deals are legit and the experience is safe.<span class="hyp">Hypothesis: shoppers trust other shoppers — proof reassures skeptics.</span></div>
+          </div>
+          <div class="wrap">
+            <div class="s-head center reveal">
+              <span class="eyebrow center">Social proof</span>
+              <h2 class="s-title">Loved by fragrance shoppers</h2>
+              <p class="s-sub">Thousands of Canadians have found their signature scent here — and keep coming back.</p>
+            </div>
+            <div class="rev-wrap">
+              <article class="rev reveal"><div class="stars">★★★★★</div><p>“Was nervous about buying discounted fragrance online — it arrived sealed, authentic, and exactly as described. Converted me completely.”</p><div class="who"><span class="av">MR</span><div><div class="nm">Maya R.</div><div class="mt2">Verified buyer · Toronto</div></div></div></article>
+              <article class="rev reveal"><div class="stars">★★★★★</div><p>“The labels made it so clear what a tester vs boxed was. No guessing. Saved money and got the real thing.”</p><div class="who"><span class="av">DL</span><div><div class="nm">Daniel L.</div><div class="mt2">Verified buyer · Calgary</div></div></div></article>
+              <article class="rev reveal"><div class="stars">★★★★☆</div><p>“Bought a gift set for my mom. Beautifully packaged and shipped fast. The scent finder pointed me right to it.”</p><div class="who"><span class="av">SP</span><div><div class="nm">Sophie P.</div><div class="mt2">Verified buyer · Montréal</div></div></div></article>
+              <article class="rev reveal"><div class="stars">★★★★★</div><p>“Third order now. Decants let me try things risk-free before committing to full bottles. Genuinely the easiest fragrance shopping I’ve done.”</p><div class="who"><span class="av">AK</span><div><div class="nm">Amir K.</div><div class="mt2">Repeat customer · Vancouver</div></div></div></article>
+            </div>
+            <div class="rev-stat reveal">
+              <div class="rstat"><b>4.8</b><div class="stars">★★★★★</div><span>Average rating</span></div>
+              <div class="rstat"><b>12,400+</b><span>Verified reviews</span></div>
+              <div class="rstat"><b>60k+</b><span>Orders shipped</span></div>
+              <div class="rstat"><b>98%</b><span>Would buy again</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 10 · SHIPPING + RETURNS REASSURANCE ===== -->
+        <section class="section section--tint">
+          <div class="ship reveal">
+            <div>
+              <span class="eyebrow">Shipping &amp; returns</span>
+              <h3>Order with total peace of mind.</h3>
+              <p>Once you’ve found the one, checking out should feel just as safe. Fast dispatch, simple returns, and tracking on every order.</p>
+            </div>
+            <div class="ship-feats">
+              <div class="sfeat"><span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="15" height="11" rx="2"/><path d="M16 9h4l3 3v5h-7zM6 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></span><div><b>Free shipping over $79</b><span>Flat-rate $9.95 below that</span></div></div>
+              <div class="sfeat"><span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Ships in 1–2 days</b><span>Most orders dispatched next business day</span></div></div>
+              <div class="sfeat"><span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg></span><div><b>Easy 30-day returns</b><span>Hassle-free on eligible items</span></div></div>
+              <div class="sfeat"><span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8l-9-5-9 5v8l9 5 9-5"/><path d="m9 12 2 2 4-4"/></svg></span><div><b>Tracked &amp; secure</b><span>Tracking number on every order</span></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 11 · FAQ ===== -->
+        <section class="section section--paper" id="faq">
+          <div class="wrap">
+            <div class="s-head center reveal">
+              <span class="eyebrow center">Good to know</span>
+              <h2 class="s-title">Questions, answered</h2>
+              <p class="s-sub">The things first-time shoppers ask most — cleared up before you check out.</p>
+            </div>
+            <div class="faq-wrap" id="faqList">
+              <div class="faq"><button class="faq-q">Are the fragrances authentic?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">Yes — 100%. Every fragrance is sourced from trusted suppliers, checked on arrival, and we never sell imitations or knock-offs. If a listing is anything other than brand-new boxed, the label tells you exactly what it is.</div></div></div>
+              <div class="faq"><button class="faq-q">What does “tester” mean?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">A tester is the identical fragrance a brand sends to retail counters, in plain packaging instead of a retail box. Same juice, same performance, lower price — it simply may arrive with a plain cap or box.</div></div></div>
+              <div class="faq"><button class="faq-q">What is a decant?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">A decant is a smaller amount of the genuine fragrance transferred into a travel atomizer. It’s the low-risk way to live with a scent for a few weeks before committing to a full bottle.</div></div></div>
+              <div class="faq"><button class="faq-q">Are products sealed?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">Boxed items arrive factory-sealed. Testers, decants and pre-owned items aren’t sealed by nature — but every listing clearly states the condition and, for pre-owned, shows the fill level.</div></div></div>
+              <div class="faq"><button class="faq-q">How long does shipping take?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">Most orders dispatch within 1–2 business days from Canada, with delivery typically in 2–7 business days depending on your province. Every order ships with tracking.</div></div></div>
+              <div class="faq"><button class="faq-q">Can I return a fragrance?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">Eligible items can be returned within 30 days. Because fragrance is personal, some conditions apply (for example, unused and in original condition) — the full policy is linked at checkout.</div></div></div>
+              <div class="faq"><button class="faq-q">How do I choose a fragrance as a gift?<span class="pm">+</span></button><div class="faq-a"><div class="faq-a-in">Start with our Gift-safe picks or the Scent Finder, lean toward crowd-pleasing fresh or warm scents, and consider a gift set for instant wow. Not sure? A decant or smaller size is a thoughtful, low-pressure choice.</div></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 12 · FINAL CTA ===== -->
+        <section class="finalcta with-anno">
+          <div class="anno" style="top:18px;right:20px">
+            <div class="anno-dot">7</div>
+            <div class="anno-card right"><span class="tag">Two intent paths</span>Guided discovery and direct shopping, side by side, so every visitor has a clear next step.<span class="hyp">Hypothesis: serving both ready-to-browse and still-deciding users lifts overall conversion.</span></div>
+          </div>
+          <div class="inner">
+            <span class="eyebrow center">Your scent is waiting</span>
+            <h2>Ready to find your <em>next scent?</em></h2>
+            <p>Take the guided route or jump straight to the bestsellers — whichever feels right today.</p>
+            <div class="hero-cta">
+              <button class="btn btn--primary" data-scroll="finder">Find Your Scent
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+              <button class="btn btn--ghost" data-scroll="blind">Shop Bestsellers</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ===== FOOTER ===== -->
+      <footer class="foot">
+        <div class="foot-grid">
+          <div class="foot-brand">
+            <div class="logo">Fragrance<span>Buy</span></div>
+            <p>Authentic designer and niche fragrances at better prices — clearly labelled, carefully sourced, and shipped across Canada.</p>
+          </div>
+          <div>
+            <h5>Shop</h5>
+            <ul><li><a href="#blind">Women</a></li><li><a href="#blind">Men</a></li><li><a href="#blind">Niche</a></li><li><a href="#finder">Gift Sets</a></li><li><a href="#blind">New Arrivals</a></li></ul>
+          </div>
+          <div>
+            <h5>Learn</h5>
+            <ul><li><a href="#finder">Scent Finder</a></li><li><a href="#learn">Fragrance Guides</a></li><li><a href="#learn">EDP vs EDT</a></li><li><a href="#auth">Authenticity</a></li></ul>
+          </div>
+          <div>
+            <h5>Help</h5>
+            <ul><li><a href="#faq">Shipping</a></li><li><a href="#faq">Returns</a></li><li><a href="#faq">Track Order</a></li><li><a href="#faq">Contact</a></li></ul>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <span>© 2025 FragranceBuy.ca — homepage redesign concept</span>
+          <span>Authentic · Canadian-owned · Secure checkout</span>
+        </div>
+      </footer>
+
+    </div><!-- /store-scroll -->
+
+    <!-- mobile sticky CTA (mobile preview only) -->
+    <div class="mobile-bar">
+      <button class="btn btn--primary btn--block" data-scroll="finder">Find Your Scent</button>
+    </div>
+    <div class="phone-home"></div>
+
+  </div><!-- /store -->
+</div><!-- /app -->
+
+<!-- ===== FLOATING PROTOTYPE DOCK ===== -->
+<div class="dock" id="dock">
+  <div class="dock-top">
+    <div class="dock-brand">Prototype <b>B</b></div>
+    <div class="dock-x" id="dockClose" role="button" aria-label="Close panel" tabindex="0">×</div>
+  </div>
+  <div class="dock-group">
+    <div class="dock-label">Preview device</div>
+    <div class="seg" id="viewSeg">
+      <button class="on" data-view="desktop">Desktop</button>
+      <button data-view="mobile">Mobile</button>
+    </div>
+  </div>
+  <div class="dock-group">
+    <div class="dock-label">Review tools</div>
+    <div class="toggle-row" id="annoToggle" role="button" tabindex="0"><span>A/B annotations</span><div class="switch"></div></div>
+    <div class="toggle-row" id="metricToggle" role="button" tabindex="0"><span>Metrics panel</span><div class="switch"></div></div>
+  </div>
+  <div class="dock-foot">FragranceBuy.ca redesign concept · Trust + Discovery. Product images via FragranceBuy.ca; some figures are illustrative.</div>
+</div>
+<button class="dock-reopen" id="dockReopen" aria-label="Open prototype panel"><span class="ic">⚙</span><span>PROTO</span></button>
+
+<!-- ===== METRICS PANEL ===== -->
+<div class="metrics-overlay" id="metricsOverlay">
+  <div class="metrics" role="dialog" aria-label="Metrics panel">
+    <div class="metrics-head">
+      <div>
+        <span class="mt">CRO Dashboard · Prototype B</span>
+        <h3>Metrics to track</h3>
+        <p>The KPIs this trust + discovery layout is designed to move. Figures below are illustrative placeholders for the prototype.</p>
+      </div>
+      <button class="metrics-close" id="metricsClose" aria-label="Close metrics">×</button>
+    </div>
+    <div class="metrics-grid" id="metricsGrid"></div>
+    <div class="metrics-note">// All values are mock data to demonstrate the dashboard. Wire to GA4 / Shopify Analytics before drawing conclusions. Deltas shown vs. prior 14-day period.</div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+(function(){
+  "use strict";
+  var app = document.getElementById('app');
+
+  /* ---------- ICONS ---------- */
+  var heart = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  var noteIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>';
+
+  /* ---------- PRODUCT DATA (real FragranceBuy.ca products; some figures illustrative) ---------- */
+  var FAM = {
+    fresh:{n:'Fresh + clean'}, warm:{n:'Warm + spicy'}, sweet:{n:'Sweet + gourmand'},
+    floral:{n:'Floral'}, woody:{n:'Woody + bold'}
+  };
+  var P = [
+    {b:'ScentStory', n:'24 Elixir Gold', g:'Unisex', c:'EDP', fam:'warm', occ:'Everyday', r:4.6, rev:524, note:'Crowd-pleasing warmth — an easy first niche-style pick.', price:52.95, retail:125, img:'https://fragrancebuy.ca/cdn/shop/files/24elixirgold-man_71f9d95e-feb7-4d94-8ec1-93552d5d8133.jpg?v=1779993806&width=533'},
+    {b:'Abercrombie & Fitch', n:'Away', g:'Women', c:'EDP', fam:'fresh', occ:'Everyday', r:4.5, rev:288, note:'Clean, fresh signature that works almost anywhere.', price:54.19, retail:125, img:'https://fragrancebuy.ca/cdn/shop/files/abercombiefitchaway-woman.jpg?v=1779993894&width=533'},
+    {b:'Giorgio Armani', n:'Acqua di Gioia Sun Gioia', g:'Women', c:'EDP', fam:'floral', occ:'Gift-safe', r:4.7, rev:410, note:'Soft, sunny floral — a safe, much-loved gift.', price:62.95, retail:135, img:'https://fragrancebuy.ca/cdn/shop/files/armanisungioa-woman.jpg?v=1780081820&width=533'},
+    {b:'Perry Ellis', n:'360 Purple', g:'Women', c:'EDP', fam:'sweet', occ:'Everyday', r:4.4, rev:356, note:'Sweet and friendly without ever feeling heavy.', price:38.00, retail:78, img:'https://fragrancebuy.ca/cdn/shop/files/PerryEllis360purpleW-woman_c3013ac3-337c-4e2f-a1ed-1d59841c01ed.jpg?v=1779993840&width=533'},
+    {b:'Abercrombie & Fitch', n:'Authentic Night Homme', g:'Men', c:'EDT', fam:'woody', occ:'Evening', r:4.5, rev:210, note:'Safe, versatile date-night pick.', price:44.95, retail:95, img:'https://fragrancebuy.ca/cdn/shop/files/A_FAuthenticNightHomme-man_289603ff-31b6-4a8d-bf15-473a57b7f6ea.jpg?v=1779993905&width=533'},
+    {b:'4711', n:'Acqua Colonia Bamboo & Watermelon', g:'Unisex', c:'EDC', fam:'fresh', occ:'Daytime', r:4.4, rev:176, note:'Light and uplifting — effortless warm-weather wear.', price:28.95, retail:55, img:'https://fragrancebuy.ca/cdn/shop/files/4711acquacoloniabamboowatermelon-man.jpg?v=1779993850&width=533'},
+    {b:'4711', n:'Lily of the Valley', g:'Women', c:'EDC', fam:'floral', occ:'Office-safe', r:4.4, rev:140, note:'Clean, classic florals that stay polite up close.', price:26.95, retail:52, img:'https://fragrancebuy.ca/cdn/shop/files/4711lilyofthevalley-woman.jpg?v=1779993870&width=533'},
+    {b:'Fred Hayman', n:'273 Red', g:'Men', c:'EDC', fam:'warm', occ:'Everyday', r:4.3, rev:95, note:'Warm, friendly classic — easy to wear daily.', price:39.95, retail:80, img:'https://fragrancebuy.ca/cdn/shop/files/273redfredhayman-man_07cc0246-2d13-474b-94f7-ede5cb9600b5.jpg?v=1779993831&width=533'}
+  ];
+
+  function stars(r){ var f = Math.round(r); return '★★★★★'.slice(0, f) + '☆☆☆☆☆'.slice(0, 5 - f); }
+
+  function cardHTML(i){
+    var p = P[i], fam = FAM[p.fam];
+    return ''+
+    '<article class="pcard reveal" data-i="'+i+'">'+
+      '<div class="pcard-media">'+
+        '<span class="fam-tag fam-'+p.fam+'"><span class="dot"></span>'+fam.n+'</span>'+
+        '<button class="wish" aria-label="Save to wishlist">'+heart+'</button>'+
+        '<img class="bottle" src="'+p.img+'" alt="'+p.b+' '+p.n+'" loading="lazy" onerror="this.style.visibility=\'hidden\'">'+
+      '</div>'+
+      '<div class="pcard-body">'+
+        '<div class="pcard-brand">'+p.b+'</div>'+
+        '<div class="pcard-name">'+p.n+'</div>'+
+        '<div class="pcard-sub">'+p.c+' · '+p.g+'</div>'+
+        '<div class="pcard-meta">'+
+          '<span class="chip">'+p.occ+'</span>'+
+          '<span class="rating"><span class="st">'+stars(p.r)+'</span>'+p.r.toFixed(1)+' <span class="rc">('+p.rev+')</span></span>'+
+        '</div>'+
+        '<div class="pcard-note">'+noteIcon+p.note+'</div>'+
+        '<div class="pcard-price">$'+p.price.toFixed(2)+' <s>$'+p.retail.toFixed(2)+'</s> <span style="font-family:var(--sans);font-weight:700;font-size:11px;color:var(--forest)">CAD</span></div>'+
+        '<div class="pcard-foot">'+
+          '<button class="btn btn--primary js-add">Add to bag</button>'+
+        '</div>'+
+      '</div>'+
+    '</article>';
+  }
+
+  var prodGrid = document.getElementById('prodGrid');
+  prodGrid.innerHTML = P.map(function(_, i){ return cardHTML(i); }).join('');
+
+  /* ---------- METRICS ---------- */
+  var METRICS = [
+    {l:'Bounce rate', v:'38.2%', d:'▼ 9.4 pts', c:'up', t:[70,66,61,57,52,46,38]},
+    {l:'Hero CTA click-through', v:'11.6%', d:'▲ 3.1 pts', c:'up', t:[6,6.8,7.6,8.6,9.6,10.6,11.6]},
+    {l:'Scent Finder clicks', v:'24.8%', d:'▲ 6.7 pts', c:'up', t:[12,14,16,18,20,22,24.8]},
+    {l:'Quiz starts', v:'8.9%', d:'▲ 2.4 pts', c:'up', t:[4,4.8,5.6,6.4,7.2,8,8.9]},
+    {l:'Product discovery clicks', v:'41.3%', d:'▲ 7.9 pts', c:'up', t:[26,29,32,34,37,39,41.3]},
+    {l:'Education engagement', v:'17.2%', d:'▲ 4.5 pts', c:'up', t:[9,10.5,12,13.5,15,16,17.2]},
+    {l:'Review engagement', v:'14.0%', d:'▲ 2.2 pts', c:'up', t:[8,9,10,11,12,13,14]},
+    {l:'Add-to-cart rate', v:'9.7%', d:'▲ 1.8 pts', c:'up', t:[6,6.6,7.2,7.9,8.5,9.1,9.7]},
+    {l:'Conversion rate', v:'3.42%', d:'▲ 0.71 pts', c:'up', t:[2.4,2.6,2.8,3,3.15,3.3,3.42]},
+    {l:'FAQ engagement', v:'12.5%', d:'▲ 3.0 pts', c:'up', t:[6,7,8,9,10,11.3,12.5]}
+  ];
+
+  function spark(t){
+    var max = Math.max.apply(null, t), min = Math.min.apply(null, t), rng = (max - min) || 1;
+    var pts = t.map(function(y, i){
+      var x = (i / (t.length - 1)) * 100;
+      var yy = 28 - ((y - min) / rng) * 24;
+      return x.toFixed(1) + ',' + yy.toFixed(1);
+    }).join(' ');
+    return '<svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">'+
+      '<polygon points="0,30 '+pts+' 100,30" fill="rgba(201,162,75,.16)"/>'+
+      '<polyline points="'+pts+'" fill="none" stroke="#CBA85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '</svg>';
+  }
+
+  var metricsRendered = false;
+  function renderMetrics(){
+    document.getElementById('metricsGrid').innerHTML = METRICS.map(function(m){
+      return '<div class="metric"><div class="ml">'+m.l+'</div><div class="mv">'+m.v+'</div><div class="md '+m.c+'">'+m.d+'</div>'+spark(m.t)+'</div>';
+    }).join('');
+    metricsRendered = true;
+  }
+
+  /* ---------- DEVICE TOGGLE ---------- */
+  var viewSeg = document.getElementById('viewSeg');
+  viewSeg.addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    viewSeg.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    app.classList.toggle('is-mobile', b.dataset.view === 'mobile');
+    window.scrollTo({ top: 0 });
+  });
+
+  /* ---------- DOCK OPEN / CLOSE ---------- */
+  var dock = document.getElementById('dock'), dockReopen = document.getElementById('dockReopen');
+  document.getElementById('dockClose').addEventListener('click', function(){ dock.classList.add('hidden'); dockReopen.classList.add('show'); });
+  dockReopen.addEventListener('click', function(){ dock.classList.remove('hidden'); dockReopen.classList.remove('show'); });
+
+  /* ---------- ANNOTATIONS ---------- */
+  var annoToggle = document.getElementById('annoToggle');
+  annoToggle.addEventListener('click', function(){ var on = annoToggle.classList.toggle('on'); app.classList.toggle('show-anno', on); });
+
+  /* ---------- METRICS PANEL ---------- */
+  var metricToggle = document.getElementById('metricToggle'), overlay = document.getElementById('metricsOverlay');
+  function openMetrics(){ if(!metricsRendered) renderMetrics(); overlay.classList.add('show'); metricToggle.classList.add('on'); }
+  function closeMetrics(){ overlay.classList.remove('show'); metricToggle.classList.remove('on'); }
+  metricToggle.addEventListener('click', function(){ overlay.classList.contains('show') ? closeMetrics() : openMetrics(); });
+  document.getElementById('metricsClose').addEventListener('click', closeMetrics);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeMetrics(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMetrics(); });
+
+  /* ---------- TOAST ---------- */
+  var toastWrap = document.getElementById('toastWrap');
+  function toast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 5 5L20 7"/></svg>' + msg;
+    toastWrap.appendChild(t);
+    setTimeout(function(){
+      t.style.transition = 'opacity .3s, transform .3s';
+      t.style.opacity = '0'; t.style.transform = 'translateY(10px)';
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 1900);
+  }
+
+  /* ---------- CART / WISHLIST ---------- */
+  var cart = 0, wish = 0;
+  var cartCount = document.getElementById('cartCount'), wishCount = document.getElementById('wishCount');
+  document.body.addEventListener('click', function(e){
+    var add = e.target.closest('.js-add');
+    if(add){
+      cart++; cartCount.textContent = cart; cartCount.dataset.n = cart;
+      var name = add.closest('.pcard').querySelector('.pcard-name').textContent;
+      toast('Added to bag · ' + name);
+      add.textContent = 'Added ✓'; add.classList.remove('btn--primary'); add.classList.add('btn--soft');
+      setTimeout(function(){ add.textContent = 'Add to bag'; add.classList.add('btn--primary'); add.classList.remove('btn--soft'); }, 1300);
+      return;
+    }
+    var w = e.target.closest('.wish');
+    if(w){
+      var on = w.classList.toggle('on');
+      wish += on ? 1 : -1; if(wish < 0) wish = 0;
+      wishCount.textContent = wish; wishCount.dataset.n = wish;
+      toast(on ? 'Saved to wishlist' : 'Removed from wishlist');
+      return;
+    }
+  });
+
+  /* ---------- FAQ ACCORDION ---------- */
+  document.getElementById('faqList').addEventListener('click', function(e){
+    var q = e.target.closest('.faq-q'); if(!q) return;
+    var item = q.parentElement, a = item.querySelector('.faq-a');
+    var open = item.classList.toggle('open');
+    a.style.maxHeight = open ? a.scrollHeight + 'px' : '0';
+  });
+
+  /* ---------- MOBILE NAV + SEARCH ---------- */
+  var burger = document.getElementById('burger'), nav = document.getElementById('nav');
+  burger.addEventListener('click', function(){ burger.classList.toggle('on'); nav.classList.toggle('open'); });
+  var searchToggle = document.getElementById('searchToggle'), search = document.getElementById('search');
+  searchToggle.addEventListener('click', function(){
+    search.classList.toggle('open');
+    if(search.classList.contains('open')){ var inp = search.querySelector('input'); if(inp) inp.focus(); }
+  });
+
+  /* ---------- SCROLL-TO (nav + CTAs) ---------- */
+  function scrollToId(id){ var el = document.getElementById(id); if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  document.body.addEventListener('click', function(e){
+    var a = e.target.closest('a[href^="#"], [data-scroll]');
+    if(!a) return;
+    var id = a.getAttribute('data-scroll') || (a.getAttribute('href') || '').slice(1);
+    if(!id || !document.getElementById(id)) return;
+    e.preventDefault();
+    scrollToId(id);
+    if(nav.classList.contains('open')){ nav.classList.remove('open'); burger.classList.remove('on'); }
+  });
+
+  /* ---------- MOOD + QUIZ CTAs ---------- */
+  document.body.addEventListener('click', function(e){
+    var mood = e.target.closest('.mood');
+    if(mood){ toast('Showing ' + mood.dataset.mood + ' fragrances'); scrollToId('blind'); return; }
+    var quiz = e.target.closest('.js-quiz');
+    if(quiz){ toast('Scent Finder quiz — coming soon'); return; }
+  });
+
+  /* ---------- MOOD CAROUSEL (mobile next / prev) ---------- */
+  (function(){
+    var track = document.getElementById('moods');
+    var next = document.querySelector('.mood-next');
+    var prev = document.querySelector('.mood-prev');
+    if(!track || !next || !prev) return;
+    function step(){
+      var card = track.querySelector('.mood');
+      var w = card ? card.getBoundingClientRect().width : 240;
+      var cs = getComputedStyle(track);
+      var gap = parseFloat(cs.columnGap || cs.gap) || 12;
+      return w + gap;
+    }
+    next.addEventListener('click', function(){
+      var max = track.scrollWidth - track.clientWidth - 4;
+      if(track.scrollLeft >= max){ track.scrollTo({ left: 0, behavior: 'smooth' }); }
+      else { track.scrollBy({ left: step(), behavior: 'smooth' }); }
+    });
+    prev.addEventListener('click', function(){
+      if(track.scrollLeft <= 4){ track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); }
+      else { track.scrollBy({ left: -step(), behavior: 'smooth' }); }
+    });
+  })();
+
+  /* ---------- ANNOUNCEMENT ROTATION ---------- */
+  var annWrap = document.querySelector('.announce-vp');
+  if(annWrap){
+    var msgs = annWrap.querySelectorAll('.rot'), idx = 0;
+    if(msgs.length > 1){
+      msgs.forEach(function(m, i){ m.style.display = i === 0 ? 'inline-flex' : 'none'; });
+      setInterval(function(){
+        msgs[idx].style.display = 'none';
+        idx = (idx + 1) % msgs.length;
+        msgs[idx].style.display = 'inline-flex';
+      }, 3800);
+    }
+  }
+
+  /* ---------- REVEAL ON SCROLL ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    reveals.forEach(function(r){ io.observe(r); });
+    setTimeout(function(){ reveals.forEach(function(r){ r.classList.add('in'); }); }, 1500); /* failsafe */
+  } else {
+    reveals.forEach(function(r){ r.classList.add('in'); });
+  }
+
+})();
+</script>
+</body>
+</html>
